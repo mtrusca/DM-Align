@@ -4,10 +4,16 @@ DMSEdit for semantic image editing
 
 # Requirements
 
-Install the required libraries.
+Install the required libraries/packages.
 
 ```python
 pip install -r requirements.txt
+```
+```python
+git clone https://github.com/facebookresearch/detectron2
+```
+```python
+python -m spacy download en_core_web_md
 ```
 
 # Instalation
