@@ -66,4 +66,4 @@ python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
 
 # Quick example
 
-Add a new image in the folder examples and edit it using ```python DMSEdit_example.ipynb ```
+Add a new image in the folder examples and edit it using ```DMSEdit_example.ipynb ```
