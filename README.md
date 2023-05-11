@@ -63,7 +63,7 @@ python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
 --token ' '  \
 --cache_dir "./cache_dir/"
 ```
-
+Note: token represents the Hugging Face token required for Stable Diffusion.
 # Quick example
 
 Add a new image in the folder examples and edit it using ```DMSEdit_example.ipynb ```
