@@ -51,7 +51,7 @@ python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
 Dream dataset
 
 ```python
-!python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
+python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
 --path_input_data './data/dream.json'  \
 --path_source_images './data/dream/' \
 --path_alignments './data/alignments_dream.json'  \
