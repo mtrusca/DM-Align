@@ -49,7 +49,7 @@ python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
 --bert_config_path './configs/config_bert.json'  \
 --path_to_jar './parser/stanford-parser.jar' \
 --path_to_models_jar './parser/stanford-parser-4.2.0-models.jar' \
---path_target_images "./output_bison_07/"  \
+--path_target_images './output_bison_07/'  \
 --token ' '  \
 --cache_dir "./cache_dir/"
 ```
@@ -65,7 +65,7 @@ python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
 --bert_config_path './configs/config_bert.json'  \
 --path_to_jar './parser/stanford-parser.jar' \
 --path_to_models_jar './parser/stanford-parser-4.2.0-models.jar' \
---path_target_images "./output_dream/"  \
+--path_target_images './output_dream/'  \
 --token ' '  \
 --cache_dir "./cache_dir/"
 ```
@@ -73,4 +73,20 @@ Note: token represents the Hugging Face token required for Stable Diffusion.
 
 # Quick example
 
-Add a new image in the folder examples and edit it using ```DMSEdit_example.ipynb ```
+Add a new image in the folder examples and edit it using ```DMSEdit_example.ipynb ```.
+
+# Evaluation
+
+Install the required libraries/packages.
+
+```python
+pip install lpips
+```
+```python
+pip install pytorch_fid
+```
+```python
+pip install git+https://github.com/openai/CLIP.git
+```
+Run the script evaluation_dmsedit.py
+
