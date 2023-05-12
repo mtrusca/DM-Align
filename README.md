@@ -88,5 +88,5 @@ pip install pytorch_fid
 ```python
 pip install git+https://github.com/openai/CLIP.git
 ```
-Run the script evaluation_dmsedit.py
+Run the script ```evaluation_dmsedit.py```
 
