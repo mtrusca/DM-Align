@@ -28,7 +28,7 @@ Please use this form [we will add the form for registration] to register.
 Fees: …..
 
 #### Schedule
-### Monday, 29th: Human-inspired learning
+##### Monday, 29th: Human-inspired learning
 12:00-12:30: Registration
 12:30-13:00: Reception
 13:00-14:00: Keynote speaker 1
@@ -37,7 +37,7 @@ Fees: …..
 16:00-16:30: Coffee break + posters
 16:30-18:00: Internal speakers - Second Session
 
-### Tuesday, 30th: Multi-modal learning
+##### Tuesday, 30th: Multi-modal learning
 8:30-9:45: Registration
 8:45-9:00: Reception 
 9:00-10:00: Keynote speaker 2
