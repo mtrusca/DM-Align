@@ -12,9 +12,10 @@ permalink: /symposium/
 
 More information follows soon. 
 
-> Quote blocks can also be nested.
->> When you start a new line with additional > characters,
->>> it simulates a threaded conversation.
+    Here is some HTML:
+        <div class="footer">
+            , ©,  2009—2017 JetBrains · All rights reserved
+        </div>
 
 
 
