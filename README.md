@@ -55,7 +55,7 @@ The researchers are invited to submit a single-page abstract of either published
 During the symposium, the abstracts will be presented as posters. The abstracts should be related to the goal of the CALCULUS project based on the following topics:
 [list of topics].
 
-### Each submission should contain: 
+#### Each submission should contain: 
 - Title of the presentation.
 - Name and the affiliation of the authors.
 - Abstract
@@ -63,7 +63,7 @@ During the symposium, the abstracts will be presented as posters. The abstracts 
   
 The abstracts should be submitted to: calculus-sym@cs.kuleuven.be. There are no printed proceedings.
 
-### Important Dates:
+#### Important Dates:
 
 Submission Deadline: 
 Notification of acceptance:
