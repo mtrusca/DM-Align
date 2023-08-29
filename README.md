@@ -12,11 +12,9 @@ permalink: /symposium/
 
 More information follows soon. 
 
-<div class="boxed">
-### **Welcome**
-The CALCULUS Symposium is the final workshop organized to celebrate the ending of the CALCULUS project coordinated by Prof. Marie-Francine Moens and funded by European Research Council (ERC) under the Horizon 2020 Advanced Grant. The workshop will be held in Leuven, Belgium between 29-30 January 2024.
-CALCULUS Symposium aims to bring together researchers interested in developing machine learning models inspired by the human brain. It is an excellent opportunity for junior and senior researchers to learn about the work of the researchers involved in the CALCULUS project, to meet senior researchers involved in the field of machine learning and to present their recent work as a poster.
-</div>
+> Quote blocks can also be nested.
+>> When you start a new line with additional > characters,
+>>> it simulates a threaded conversation.
 
 
 
