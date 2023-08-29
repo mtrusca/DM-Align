@@ -6,18 +6,32 @@ sitemap: false
 permalink: /symposium/
 ---
 
-# The CALCULUS Symposium
+# The CALCULUS Symposium 
 
 #### Coming on January 29 - 30, 2024! 
 
 More information follows soon. 
 
-    Here is some HTML:
-        <div class="footer">
-            , ©,  2009—2017 JetBrains · All rights reserved
-        </div>
+Set multiple lines of code in fenced code blocks.
 
+```
+action: function(ctx) {
+    workflow.check(!ctx.issue.isChanged('votes'), workflow.i18n('Voting for a resolved issue is not allowed.'));
+},
+```
 
+The following code block uses syntax highlighting for Haskell:
+```hs
+-- Point-free style
+fib :: Integer -> Integer
+fib = (fibs !!)
+where fibs = 0 : scanl (+) 1 fibs
+
+-- Explicit
+fib :: Integer -> Integer
+fib n = fibs !! n
+where fibs = 0 : scanl (+) 1 fibs
+```
 
 
 
