@@ -26,6 +26,40 @@ Weaknesses:
 |Prompt-to-Prompt|           |          |           |0.77±0.00 |
 |DM-Align        |**60.76±1.01** |**0.29±0.00**	|**36.02±0.84**	|0.78±0.00 |
 
+5.	*It's difficult to ascertain if DM-Align truly offers the best balance between input image similarity and target instruction.* If we compare the proposed model with the best baseline using BISON_07 data, the proposed model improves the image-based metrics by 32.12% (FID, LPIPS and PWMSE are improved by 18.70%, 57.89% and 19.77%). On the other hand, the best baseline (FlexIT) improves the text-based similarity (CLIP Score) by only 12.04%. Similar results are obtained for the DREAM dataset: our model improves image-based metrics by 12.45%, while the best baseline improves the text-based similarity computed with the CLIP score by 9.76%. **Based on the above results and knowing that the best baseline FlexIT is built on CLIP, meaning that the CLIP score is biased, we conclude that the proposed DM-Align achieved a better balance between the input image similarity and the target instruction than the baselines do.**
+6.	*Many key tables and figures referred in the main text are actually in the Appendix.* **Due to the limited space, we kept in the main paper only the most relevant tables.**
+7.	*The success of the proposed method appears to be entirely dependent on the performance of other models.* **While we used several existing models, we rethought their application in the context of text-based image manipulation. In the end, all these models are integrated into a system that addresses the image editing in a human-like way with a good level of explainability.**
+
+Comments:
+1. *The detailed description of the neural semi-Markov CRF model.* We will reduce the description of semi-Markov CRF model in the main paper.
+2. *There are two missing references.* We will add the two missing references in the section of related work.
+
+
+We thank the reviewers for their instructive comments. Their questions and remarks are written in italic font.
+
+weaknesses
+
+1. *Can mask generation handle positional information? For instance, consider an image with the caption "a cat in front of a dog." If a large part of the dog's body is obscured by the cat, can this method generate an appropriate diffusion mask to edit the dog when the user wants to replace it with another object?* Yes, DM-Align can replace the dog with another object. The word alignments will connect the cat mentioned in the source instruction with the cat mentioned in the target instruction, and the dog mentioned in the source instruction with the other object mentioned in the target instruction. **Based on these alignments and assuming that the obscured dog can still be recognised as a dog, the proposed DM-Align preserves the cat and replaces the dog.**
+2. *Can editing preserve the identity information of the objects in the image? If a user desires "a dog in front of a cat" will this method generate a new image containing the original cat and dog, rather than creating a different one?* **Yes, DM-Align can preserve the identity information of the objects in the image as long as they are shared by both text instructions and have common modifiers or no modifiers.** If the user desires “a dog in front of a cat” while the source caption is “a monkey in front of a cat” then the monkey will be replaced by the dog. If the source caption is “a dog in front of a monkey” then the monkey will be replaced by the cat.
+3. *Additionally, there are some typos in the paper: 1)In Table 1, the LPIPS score for Dream->ControlNet. 2)In Section 5.2, Figure ??.* We will correct these typos in the main paper.
+4. *Lastly, in Section 5.1, I suggest condensing the two research questions into phrases, perhaps labeling them as "Text Complexity" and "Background Preservation," similar to the last paragraph.* We will shorten the research questions as suggested in the main paper.
+
+
+We thank the reviewers for their instructive comments. Their questions and remarks are written in italic font.
+
+Weaknesses
+1. *The title is unattractive and doesn't display the characteristics of your method.* Unfortunately, we can not change the title of our paper at this moment.
+2. *The editing process needs segmentation, which decreases the model efficiency.* **The segmentation does not affect the efficiency of the editing process. The time required to edit an image with DM-Align is 40.6 seconds, while the time required to edit an image with the best baseline (FlexIT) is 74.3 seconds.** This time is obtained using one NVIDIA Tesla T4 GPU. We will add these results to the Appendix.
+3. *The paper mentions that the role of the diffusion mask is to adapt to different sizes. While the example in Figure 3 illustrates this, it's unclear whether the method would be successful when transitioning from a larger size to a smaller one. For instance, replacing a larger dog with a smaller cat could result in a larger diffusion mask than the dog's area.* It is true that the diffusion mask helps especially for the cases when the replaced object is smaller than the inserted object (as illustrated in Figure 3). **However, if the inserted object is smaller than the replaced object, then the edited mask is larger than the inserted object, and the inpainting model (in this case Stable Diffusion) can generate the smaller object at a scale learnt during the training.**
+4. *Additional segmentation models could be seen as unfair compared to other methods. According to Table 3, segmentation has the most significant impact on the results.* **The ablation test without segmentation refers to the case when the editing mask relies only on the diffusion mask without being adjusted by the regions detected based on the word alignments. As the refinement of the diffusion mask based on these regions adds precision to the editing mask, the results presented in Table 3 are expected.** In the main paper, we will rename this ablation test in order to prevent future confusion.
+5. *The method could be more creative. It uses grounded-sam to get the edited regions and conducts some refinements, then utilizes inpainting.* **The novel part of our model lies in the text-based control. This control results from the alignment of the content of the original text instruction with the updated instruction, so the reasoning about the updates takes place in the semantic space of the language instructions, which according to our knowledge has never been done before.** Based on the text token alignments, we can easily implement an image manipulation task as a collection of deletion, insertion and replacement operations. Due to text-based control, the proposed model generates good editing results even when the text instructions are long and elaborate. This aspect differentiates DM-Align from the baseline models that become unstable for more complicated captions.
+
+Comments:
+1. *Is there any newer baseline model for experimental comparison? The baselines in experiment results were proposed one year ago.* **ControlNet is one of our baselines that was proposed in 2023, the year when we submitted this paper to NAACL.**
+2. *The “Diffusion mask” part should be explained clearer.* **We start by running a denoising diffusion probabilistic model (DDPM) over the input image and the source text instruction and another DDPM over the input image and the target text instruction. The result is represented by two noise estimates computed for each text instruction. Next, we compute the absolute difference between the two noise estimates. To obtain the final diffusion mask, the absolute difference is rescaled between [0,1] and binarized.** Currently, the DDPM details are presented in the Appendix due to the lack of space. In the main paper, we will revise the “Diffusion mask” section to ensure that it is better explained.
+3. *There is a typo error in Line 566. Is there a typo in DMSEdit in Figures 3-7?.* We will correct the typo in the main paper.
+
+
 # Requirements
 
 Install the required libraries/packages.
