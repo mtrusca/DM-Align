@@ -10,7 +10,8 @@ Weaknesses:
 3.  *The restriction to nouns (with adjectives) limits the scope of editing possibilities.* ***We clearly stated this limitation in our paper and we would like to address the editing based on position changes in the feature work.***
 4.	*Assuming that complicated and elaborated text captions refer to "longer length" and "more chunks," why not demonstrate the results across various lengths/numbers of chunks within the same dataset?* ***We selected two subsets of BISON_07 edited images considering the number of chunks equal to 1 and 4.*** Based on the tables below, the difference between the image-based metrics (especially LPIPS and PWMSE) is higher when the number of chunks is 4 than when the number is 1. ***These results prove that the proposed model is especially effective for elaborate text instructions (with a larger number of chunks).*** These results are consistent with the results presented in the paper. These results will be added in the Appendix.
 
-|no chunks=1     | FID ↓     |LPIPS ↓	 |PWMSE ↓	  |CLIPScore↑|      
+|no chunks=1     | FID ↓     |LPIPS ↓	  |PWMSE ↓	  |CLIPScore↑|      
+|----------------|-----------|----------|-----------|----------|
 |FlexIT          |70.23±0.43 |0.34±0.00 |39.87±0.06 |0.87±0.00 |
 |DiffEdit        |83.53±0.24 |0.34±0.00 |40.23±3.98 |0.78±0.00 |
 |ControlNet      |79.78±0.19 |0.35±0.00 |42.61±0.98 |0.78±0.00 |
