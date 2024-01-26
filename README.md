@@ -37,8 +37,7 @@ Comments:
 
 We thank the reviewers for their instructive comments. Their questions and remarks are written in italic font.
 
-weaknesses
-
+Weaknesses:
 1. *Can mask generation handle positional information? For instance, consider an image with the caption "a cat in front of a dog." If a large part of the dog's body is obscured by the cat, can this method generate an appropriate diffusion mask to edit the dog when the user wants to replace it with another object?* Yes, DM-Align can replace the dog with another object. The word alignments will connect the cat mentioned in the source instruction with the cat mentioned in the target instruction, and the dog mentioned in the source instruction with the other object mentioned in the target instruction. **Based on these alignments and assuming that the obscured dog can still be recognised as a dog, the proposed DM-Align preserves the cat and replaces the dog.**
 2. *Can editing preserve the identity information of the objects in the image? If a user desires "a dog in front of a cat" will this method generate a new image containing the original cat and dog, rather than creating a different one?* **Yes, DM-Align can preserve the identity information of the objects in the image as long as they are shared by both text instructions and have common modifiers or no modifiers.** If the user desires “a dog in front of a cat” while the source caption is “a monkey in front of a cat” then the monkey will be replaced by the dog. If the source caption is “a dog in front of a monkey” then the monkey will be replaced by the cat.
 3. *Additionally, there are some typos in the paper: 1)In Table 1, the LPIPS score for Dream->ControlNet. 2)In Section 5.2, Figure ??.* We will correct these typos in the main paper.
@@ -47,7 +46,7 @@ weaknesses
 
 We thank the reviewers for their instructive comments. Their questions and remarks are written in italic font.
 
-Weaknesses
+Weaknesses:
 1. *The title is unattractive and doesn't display the characteristics of your method.* Unfortunately, we can not change the title of our paper at this moment.
 2. *The editing process needs segmentation, which decreases the model efficiency.* **The segmentation does not affect the efficiency of the editing process. The time required to edit an image with DM-Align is 40.6 seconds, while the time required to edit an image with the best baseline (FlexIT) is 74.3 seconds.** This time is obtained using one NVIDIA Tesla T4 GPU. We will add these results to the Appendix.
 3. *The paper mentions that the role of the diffusion mask is to adapt to different sizes. While the example in Figure 3 illustrates this, it's unclear whether the method would be successful when transitioning from a larger size to a smaller one. For instance, replacing a larger dog with a smaller cat could result in a larger diffusion mask than the dog's area.* It is true that the diffusion mask helps especially for the cases when the replaced object is smaller than the inserted object (as illustrated in Figure 3). **However, if the inserted object is smaller than the replaced object, then the edited mask is larger than the inserted object, and the inpainting model (in this case Stable Diffusion) can generate the smaller object at a scale learnt during the training.**
