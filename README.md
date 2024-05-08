@@ -23,7 +23,7 @@ _Optional_: Generate new word alignments using https://github.com/chaojiang06/ne
 # Data
 
 Download the images, captions and alignments in the folder data.
-- BISON 0.7
+- BISON
   - Images: [Link](https://drive.google.com/drive/folders/18RKSWSs42q3xq2Y6JHl4_AZKlnvxpJc4?usp=share_link)
   - Captions: [Link](https://drive.google.com/file/d/1mPOeQajLRzHRLS6DYiNUXLJNZjCTE6t4/view?usp=share_link)
   - Alignments: [Link](https://drive.google.com/file/d/1XVJGXNfjmAVapjPTSfr38O6OGJ_qpWOQ/view?usp=share_link)
@@ -34,10 +34,10 @@ Download the images, captions and alignments in the folder data.
 
 # Edit images with DMSEdit
 
-BISON 07 dataset
+BISON dataset
 
 ```python
-python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
+python /content/drive/MyDrive/dm_align.py \
 --path_input_data './data/bison_07.json'  \
 --path_source_images './data/bison_07/' \
 --path_alignments './data/alignments_bison_07.json'  \
@@ -53,7 +53,7 @@ python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
 Dream dataset
 
 ```python
-python /content/drive/MyDrive/dmsedit/run_dmsedit.py \
+python /content/drive/MyDrive/ddm_align.py \
 --path_input_data './data/dream.json'  \
 --path_source_images './data/dream/' \
 --path_alignments './data/alignments_dream.json'  \
@@ -80,5 +80,5 @@ pip install pytorch_fid
 ```python
 pip install git+https://github.com/openai/CLIP.git
 ```
-Run the script ```evaluation_dmsedit.py```
+Run the script ```evaluation.py```
 
