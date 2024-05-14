@@ -173,7 +173,6 @@ if __name__ == '__main__':
                                                                                            noun_modifiers_pairs2,
                                                                                            noun_verb_pairs,
                                                                                            wordnet_lemmatizer)
-        temp1, temp2 = [], []
         add1_tok = [i for i in add1_tok if i != 'photo']
         add1_tok = [i for i in add1_tok if i != 'painting']
         remove1_tok = [i for i in remove1_tok if i != 'photo']
@@ -190,7 +189,6 @@ if __name__ == '__main__':
             path = os.path.join(args.path_objects , k + '_add.npy')
             with open(path, 'wb') as f:
                 np.save(f, maps1)
-            temp1.append(maps1)
         torch.cuda.empty_cache()
         gc.collect()
         if remove1_tok_dict != {}:
@@ -201,5 +199,4 @@ if __name__ == '__main__':
             path = os.path.join(args.path_objects , k + '_remove.npy')
             with open(path, 'wb') as f:
                 np.save(f, maps2)
-            temp2.append(maps2)
 
