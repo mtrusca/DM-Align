@@ -80,12 +80,7 @@ def extract_words_alignment(source, target, alignment, noun_modifiers_pairs1, no
     doc2 = nlp(target.lower())
     tokens1 = nltk.word_tokenize(source.lower())
     tokens2 = nltk.word_tokenize(target.lower())
-    alignment_words = []
     add1, remove1, add2 = [], [], []
-    # inds2 = []
-    # for pair in list(alignment[0]):
-    #   _, ind2 = [int(i) for i in pair.split('-')]
-    #   inds2.append(ind2)
     alignment_sent1 = list(set([int(i.split('-')[0]) for i in alignment[0]]))
     alignment_sent2 = list(set([int(i.split('-')[1]) for i in alignment[0]]))
     for pair in list(alignment[0]):
@@ -97,7 +92,7 @@ def extract_words_alignment(source, target, alignment, noun_modifiers_pairs1, no
         # updated part
         if lemma1 not in lemma2_syn and lemma2 not in lemma1_syn and lemma1 != lemma2:
             if doc1[ind1].pos_ == 'NOUN' and doc2[ind2].pos_ == 'NOUN':
-              add1.append(ind1)
+                add1.append(ind1)
         # property changed
         if lemma1 in lemma2_syn or lemma2 in lemma1_syn or lemma1 == lemma2:
             if doc1[ind1].pos_ == 'NOUN' and doc2[ind2].pos_ == 'NOUN':
@@ -142,6 +137,8 @@ if __name__ == '__main__':
     parser.add_argument("--path_images", type=str)
     parser.add_argument("--path_objects", type=str)
     args = parser.parse_args()
+    if not os.path.isdir(args.path_objects):
+        os.makedirs(args.path_objects)
     with open(args.path_data, 'r') as myfile:
         data = myfile.read()
     data = json.loads(data)
@@ -199,4 +196,3 @@ if __name__ == '__main__':
             path = os.path.join(args.path_objects , k + '_remove.npy')
             with open(path, 'wb') as f:
                 np.save(f, maps2)
-
