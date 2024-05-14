@@ -856,7 +856,7 @@ if __name__ == '__main__':
     parser.add_argument("--spanbert_path", default='models/spanbert', type=str)
     parser.add_argument("--checkpoint_path", default='models/word_alignments_model.pt', type=str)
     parser.add_argument("--path_data", type=str)
-    parser.add_argument("--path_generated_alignments", type=str)
+    parser.add_argument("--path_alignments", type=str)
     args = parser.parse_args()
     with open(args.path_data, 'r') as myfile:
         data = myfile.read()
@@ -871,6 +871,6 @@ if __name__ == '__main__':
         alignments[obj['image_filename']] = str(
             align_words(obj['caption1'].lower(), obj['caption2'].lower(), model, tokenizer))
 
-    with open(args.path_generated_alignments, 'w') as dd:
+    with open(args.path_alignments, 'w') as dd:
         json.dump(alignments, dd)
 
