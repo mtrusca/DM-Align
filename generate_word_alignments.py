@@ -871,6 +871,5 @@ if __name__ == '__main__':
         alignments[obj['image_filename']] = str(
             align_words(obj['caption1'].lower(), obj['caption2'].lower(), model, tokenizer))
 
-    with open(args.path_alignments, 'w') as dd:
+    with open(args.path_generated_alignments, 'w') as dd:
         json.dump(alignments, dd)
-
