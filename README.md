@@ -16,9 +16,9 @@ python -m spacy download en_core_web_md
 
 Download the Stanford Parser from https://nlp.stanford.edu/software/lex-parser.shtml in the folder parser.
 
-Download the spanBERT and the pre-trained checkpoint for word alignments from https://github.com/chaojiang06/neural-Jacana in the folder models.
+Download spanBERT and the pre-trained checkpoint for word alignments from https://github.com/chaojiang06/neural-Jacana in the folder models.
 
-Generate new word alignments between source and target text instructions using
+Generate new word alignments between source and target text instructions using:
 
 ```
 python generate_word_alignments.py \
@@ -27,7 +27,7 @@ python generate_word_alignments.py \
 ```
 Note: running the file generate_word_alignments.py requires transformers 2.2.2.
 
-Extract objects associated with the keywords of the source and target text instructions using 
+Extract objects associated with the keywords of the source and target text instructions using:
 
 ```
 python grounded_sam_objects.py \
@@ -70,7 +70,5 @@ python evaluation.py \
 --path_mask 'data/dream_masks' \
 --path_images 'data/dream' \
 --back 0
-
- Note: use back 1 to evaluate only the background.
 ```
-
+ Note: use back 1 to evaluate only the background.
