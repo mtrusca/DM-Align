@@ -1,10 +1,12 @@
 
 import argparse
-import clip, torch, sklearn.preprocessing, collections, pathlib, warnings, tqdm, cv2, json, shutil
-from PIL import Image
+import clip, torch, sklearn.preprocessing, collections, pathlib, warnings, tqdm, shutil
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
 from packaging import version
-
+import numpy as np
+from PIL import Image
+import os, cv2, json, lpips
+from torchvision import transforms
 
 class CLIPCapDataset(torch.utils.data.Dataset):
     def __init__(self, data, prefix='A photo depicts'):
@@ -20,7 +22,6 @@ class CLIPCapDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.data)
-
 
 class CLIPImageDataset(torch.utils.data.Dataset):
     def __init__(self, data):
@@ -74,21 +75,12 @@ def extract_all_images(images, model, device, batch_size=64, num_workers=8):
     all_image_features = np.vstack(all_image_features)
     return all_image_features
 
-
 def get_clip_score(model, images, candidates, device, w=2.5):
-    '''
-    get standard image-text clipscore.
-    images can either be:
-    - a list of strings specifying filepaths for images
-    - a precomputed, ordered matrix of image features
-    '''
     if isinstance(images, list):
-        # need to extract image features
         images = extract_all_images(images, model, device)
 
     candidates = extract_all_captions(candidates, model, device)
 
-    #as of numpy 1.21, normalize doesn't work properly for float16
     if version.parse(np.__version__) < version.parse('1.21'):
         images = sklearn.preprocessing.normalize(images, axis=1)
         candidates = sklearn.preprocessing.normalize(candidates, axis=1)
@@ -104,9 +96,6 @@ def get_clip_score(model, images, candidates, device, w=2.5):
 
 
 def get_refonlyclipscore(model, references, candidates, device):
-    '''
-    The text only side for refclipscore
-    '''
     if isinstance(candidates, list):
         candidates = extract_all_captions(candidates, model, device)
 
@@ -145,9 +134,7 @@ def get_refonlyclipscore(model, references, candidates, device):
 
     return np.mean(per), per
 
-
 def compute_clip_score(image_dir, data2):
-    # args = parse_args()
     image_paths = [os.path.join(image_dir, path) for path in os.listdir(image_dir)
                    if path.endswith(('.png', '.jpg', '.jpeg', '.tiff'))]
     image_ids = [pathlib.Path(path).stem for path in image_paths]
@@ -159,8 +146,6 @@ def compute_clip_score(image_dir, data2):
         k = st #+ '_output'
         candidates[k] = obj['caption2']
 
-    # with open(candidates_json) as f:
-    #     candidates = json.load(f)
     candidates = [candidates[cid] for cid in image_ids]
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -180,26 +165,20 @@ def compute_clip_score(image_dir, data2):
     scores = {image_id: {'CLIPScore': float(clipscore)}
               for image_id, clipscore in
               zip(image_ids, per_instance_image_text)}
-    # print('CLIPScore: {:.4f}'.format(np.mean([s['CLIPScore'] for s in scores.values()])))
     s = []
     for i in scores.keys():
         s.append(scores[i]['CLIPScore'])
     print('clip score', np.mean(s))
     return scores
 
-import numpy as np
-from PIL import Image
-import os, cv2, json, lpips
-from torchvision import transforms
-
 def target_image_caption(data):
-  candidates = {}
-  for obj in data:
-    k = obj['image_filename']
-    st, ext = os.path.splitext(obj['image_filename'])
-    k = st #+ '_output'
-    candidates[k] = obj['caption2']
-  return candidates
+    candidates = {}
+    for obj in data:
+        k = obj['image_filename']
+        st, ext = os.path.splitext(obj['image_filename'])
+        k = st #+ '_output'
+        candidates[k] = obj['caption2']
+    return candidates
 
 def pwmse(img1, img2):
    h, w = img1.shape
@@ -209,45 +188,45 @@ def pwmse(img1, img2):
    return mse
 
 def compute_pwmse_score(path0, path1):
-  files0 = sorted(os.listdir(path0))
-  files1 = sorted(os.listdir(path1))
-  score_alex1, score_alex2, score_alex3, score_alex4, score_alex5 = [], [], [], [], []
-  for i in range(len(files1)):
-    img0 = cv2.imread(path0+files0[i])
-    img0 = cv2.cvtColor(img0, cv2.COLOR_BGR2GRAY)
-    img1 = cv2.imread(path1+files1[i])
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    score_alex1.append(pwmse(img0, img1))
-  return score_alex1
+    files0 = sorted(os.listdir(path0))
+    files1 = sorted(os.listdir(path1))
+    score_pwmse = []
+    for i in range(len(files1)):
+        img0 = cv2.imread(os.path.join(path0,files0[i]))
+        img0 = cv2.cvtColor(img0, cv2.COLOR_BGR2GRAY)
+        img1 = cv2.imread(os.path.join(path1,files1[i]))
+        img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+        score_pwmse.append(pwmse(img0, img1))
+    return score_pwmse
 
 def compute_lpips_score(path0, path1, loss_fn_alex):
-  files0 = sorted(os.listdir(path0))
-  files1 = sorted(os.listdir(path1))
-  score_alex1, score_alex2, score_alex3, score_alex4, score_alex5 = [], [], [], [], []
-  convert_tensor = transforms.ToTensor()
-  for i in tqdm.tqdm(range(len(files1))):
-    img0 = Image.open(path0+files0[i])
-    img0 = convert_tensor(img0)
-    img1 = Image.open(path1+files1[i])
-    img1 = convert_tensor(img1)
-    score_alex1.append(loss_fn_alex(img0, img1).item())
-  return score_alex1
+    files0 = sorted(os.listdir(path0))
+    files1 = sorted(os.listdir(path1))
+    score_alex = []
+    convert_tensor = transforms.ToTensor()
+    for i in tqdm.tqdm(range(len(files1))):
+        img0 = Image.open(os.path.join(path0,files0[i]))
+        img0 = convert_tensor(img0)
+        img1 = Image.open(os.path.join(path1,files1[i]))
+        img1 = convert_tensor(img1)
+        score_alex.append(loss_fn_alex(img0, img1).item())
+    return score_alex
 
-def prepare_image(data, path_images, path_masks, path_images_ref, path_output, back = 0, is_real = 0):
+def prepare_image(data, output_dir, path_mask, path_images, path_output, back = 0, is_real = 0):
     for i, obj in enumerate(data):
-        path_image_ref = os.path.join(path_images_ref, obj['image_filename'])
+        path_image_ref = os.path.join(path_images, obj['image_filename'])
         shape_ref = cv2.imread(path_image_ref).shape[:2]
         if is_real == 0:
-            path_image = os.path.join(path_images,
+            path_image = os.path.join(output_dir,
                                   obj['image_filename'][:-4]+'_output.jpg' )
         if is_real ==1:
-            path_image = os.path.join(path_images,
+            path_image = os.path.join(output_dir,
                                   obj['image_filename'] )
         img = cv2.imread(path_image)
         if back == 1:
-            path_mask = os.path.join(path_masks,
+            path_mask_img = os.path.join(path_mask,
                                      obj['image_filename'][:-4] + '.npy')
-            with open(path_mask, 'rb') as f:
+            with open(path_mask_img, 'rb') as f:
                 mask_remove = np.load(f)
             mask1 = np.stack([mask_remove] * 3)
             mask1 = np.transpose(mask1, (1, 2, 0))
@@ -267,12 +246,12 @@ def prepare_image(data, path_images, path_masks, path_images_ref, path_output, b
         cv2.imwrite(path_image_red, masked_img)
 
 def run(args):
-    path_data = args.path_data #'data/json_files/100_images.json'
-    path_images = args.path_images #'results/dmalign_100_vicha_1/'
-    path_masks = args.path_masks# 'data/masks/masks_100/'
-    path_images_ref = args.path_images_ref# 'data/100_images/'
-    path_output = 'data/test1/'  # predictie
-    path_output_ref = 'data/test0/'   # imagini reale
+    path_data = args.path_data
+    output_dir = args.output_dir
+    path_mask = args.path_mask
+    path_images = args.path_images
+    path_output = 'data/predicted/'  # predicted images
+    path_output_ref = 'data/real/'   # real images
     back = args.back
     with open(path_data, 'r') as myfile: data = myfile.read()
     data = json.loads(data)
@@ -285,14 +264,14 @@ def run(args):
     if not os.path.isdir(path_output_ref):
         os.makedirs(path_output_ref)
     loss_fn_alex = lpips.LPIPS(net='alex')
-    prepare_image(data, path_images, path_masks, path_images_ref, path_output, back = back, is_real = 0)
+    prepare_image(data, output_dir, path_mask, path_images, path_output, back = back, is_real = 0)
     if back == 1:
-        prepare_image(data, path_images_ref, path_masks, path_images_ref, path_output_ref, back=back, is_real=1)
+        prepare_image(data, path_images, path_mask, path_images, path_output_ref, back=back, is_real=1)
         lpips_scores = compute_lpips_score(path_output_ref, path_output, loss_fn_alex)
         mse_scores = compute_pwmse_score(path_output_ref, path_output)
     else:
-        lpips_scores = compute_lpips_score(path_images_ref, path_output, loss_fn_alex)
-        mse_scores = compute_pwmse_score(path_images_ref, path_output)
+        lpips_scores = compute_lpips_score(path_images, path_output, loss_fn_alex)
+        mse_scores = compute_pwmse_score(path_images, path_output)
     print('######## background ##########', args.back)
     print('######## background ##########', args.back)
     print('######## background ##########', args.back)
@@ -307,9 +286,9 @@ def run(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--path_data", type=str)
-    parser.add_argument("--path_masks", type=str)
+    parser.add_argument("--path_mask", type=str)
+    parser.add_argument("--output_dir", type=str)
     parser.add_argument("--path_images", type=str)
-    parser.add_argument("--path_images_ref", type=str)
-    parser.add_argument("--back", type=int)
+    parser.add_argument("--back", type=int, default=0)
     args = parser.parse_args()
     run(args)
