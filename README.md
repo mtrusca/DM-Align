@@ -20,7 +20,7 @@ Download the spanBERT and the pre-trained checkpoint for word alignments from ht
 
 Generate new word alignments between source and target text instructions using
 
-```python
+```
 python generate_word_alignments.py \
 --path_data 'data/json_files/dream.json' \
 --path_alignments 'data/json_files/alignments_dream.json'
@@ -47,7 +47,7 @@ Download the input images in the folder data.
 
 # Edit images with DM-Align
 
-```python
+```
 python dm_align.py \
 --path_data 'data/json_files/dream.json'  \
 --path_images 'data/dream' \
@@ -62,16 +62,15 @@ Note: token_huggingface represents the Hugging Face token required for Stable Di
 
 # Evaluation
 
-Install the required libraries/packages.
+Run the script 
+```
+python evaluation.py \
+--path_data 'data/json_files/dream.json'  \
+--output_dir 'results/dream' \
+--path_mask 'data/dream_masks' \
+--path_images 'data/dream' \
+--back 0
 
-```python
-pip install lpips
+ Note: use back 1 to evaluate only the background.
 ```
-```python
-pip install pytorch_fid
-```
-```python
-pip install git+https://github.com/openai/CLIP.git
-```
-Run the script ```evaluation.py```
 
