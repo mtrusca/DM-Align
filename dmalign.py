@@ -184,7 +184,7 @@ def encode_text(text_encoder, tokenizer, prompts, maxlen=None):
     inp = tokenizer(prompts, padding="max_length", max_length=maxlen, truncation=True, return_tensors="pt")
     return text_encoder(inp.input_ids.to("cuda"))[0].half()
 
-def caption_to_img_noise(scheduler, text_encoder, tokenizer, unet, vae, prompts, init_img, final_mask_remove, caption_type = 'target',
+def caption_to_img_noise(scheduler, text_encoder, tokenizer, unet, vae, prompts, init_latents, noise, final_mask_remove, caption_type = 'target',
                           map_error = True, g=7.5, seed=100, strength=0.3, steps=50, dim=512):
     text = encode_text(text_encoder, tokenizer, prompts)
     uncond = encode_text(text_encoder, tokenizer, [""], text.shape[1])
@@ -195,10 +195,9 @@ def caption_to_img_noise(scheduler, text_encoder, tokenizer, unet, vae, prompts,
     emb = torch.cat([uncond, text])
     if seed: torch.manual_seed(seed)
     scheduler.set_timesteps(steps)
-    init_latents = pil_to_latents(vae, init_img)
+    
     init_timestep = int(steps * strength)
     timesteps = scheduler.timesteps[-init_timestep]
-    noise = torch.randn(init_latents.shape, generator=None, device="cuda", dtype=init_latents.dtype)
 
     if map_error:
         m1 = reshape_mask_with_dim(final_mask_remove, noise.shape[2], noise.shape[3])
@@ -223,13 +222,15 @@ def caption_to_img_noise(scheduler, text_encoder, tokenizer, unet, vae, prompts,
 
 def create_mask(scheduler, text_encoder, tokenizer, unet, vae, init_img, rp, qp, final_mask_remove, map_error, n=20, s=0.5):
     diff, d1, d2 = {}, {}, {}
+    init_latents = pil_to_latents(vae, init_img)
+    noise = torch.randn(init_latents.shape, generator=None, device="cuda", dtype=init_latents.dtype)
     for idx in range(n):
         orig_noise = caption_to_img_noise(scheduler, text_encoder, tokenizer, unet, vae,
-                                           prompts=rp, init_img=init_img, final_mask_remove = final_mask_remove, map_error=map_error,
+                                           prompts=rp, init_latents=init_latents, noise=noise, final_mask_remove = final_mask_remove, map_error=map_error,
                                            caption_type = 'source',
                                            strength=s, seed=100 * idx)[0]
         query_noise = caption_to_img_noise(scheduler, text_encoder, tokenizer, unet, vae,
-                                            prompts=qp, init_img=init_img, final_mask_remove = final_mask_remove, map_error=map_error,
+                                            prompts=qp, init_latents=init_latents, noise=noise, final_mask_remove = final_mask_remove, map_error=map_error,
                                             caption_type = 'target',
                                             strength=s, seed=100 * idx)[0]
         diff[idx] = (np.array(orig_noise) - np.array(query_noise))
